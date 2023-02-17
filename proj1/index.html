@@ -76,6 +76,13 @@
   <img src="./images/184p1.png"/>
   <p>Extra credit: Explain any special optimizations you did beyond simple bounding box triangle rasterization, with a timing comparison table (we suggest using the c++ clock() function around the svg.draw() command in DrawRend::redraw() to compare millisecond timings with your various optimizations off and on).</p>
 
+  <p> I tried a bunch of optimizations. Initially, I thought about doing a change of basis, so that instead of traversing the x y pixel grid, I traverse based on the two edges from p0. This works mostly, until I realized that certain pixels are skipped because by doing this change of basis I no longer have any notion about screen distance - the best I could do is to lower the increment to decrease the chance of skipping pixels, but that just means increasing more sampling, so this approach is a dud.
+      I then tried a blockbased approach with multithreading. The interesting part is that the moment I changed the program to be blockbased (to further optimize fast in and out), the rendering time jumped by 3.5 times on test3 (from around 20k to 70k), which means multithreading is going to fight an uphill battle. Multithreading did not win this battle, and my rendering time didn't get better. Bigger block sizes doesn't quite work on small triangles.
+      As a last ditched approach, I optimized the naive approach by factoring out all unneccessary arithmetic inside the loop, and that bought my time down by a miniscule amount. (by around 500 on test3).
+      here is a comparison table on test:</p>
+      
+  <p>naive approach: 20727, naive optimized: 19172, block_based non-multithread: 77358, block_based multithread: 77266</p>
+
 
 <h3 align="middle">Part 2: Antialiasing triangles</h3>
 
@@ -109,6 +116,32 @@
   </table>
 </div>
 
+<p>EC: With jitter sampling, things get a little messy. instead of a static offset of 0.5, I used a random variable between 0 and 1 as the location to super sample.</p>
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>
+        <img src="./images/scuffed1.png" align="middle" width="400px"/>
+        <figcaption align="middle">this is nearest pixel sampling. As seen here, jitter sampling causes the edges to sometime fall out of the triangle, causing aliases on the edges. In fact, this can be interpreted as adding noise to high frequency data.</figcaption>
+      </td>
+      <td>
+        <img src="./images/scuffed2.png" align="middle" width="400px"/>
+        <figcaption align="middle">This is the 4 pixel super sample, The aliases are disappearing relatively quickly.</figcaption>
+      </td>
+    </tr>
+    <br>
+    <tr>
+      <td>
+        <img src="./images/scuffed3.png" align="middle" width="400px"/>
+        <figcaption align="middle">by 9 super samples, it almost entirely disappears, there are still some pixels left that have lighter shades on the edges due to randomness.</figcaption>
+      </td>
+      <td>
+        <img src="./images/scuffed4.png" align="middle" width="400px"/>
+        <figcaption align="middle">from 4 pixel super sample, this looks better than the default method in terms of reducing aliases. However, due to randomness, each time we re-ender the edges will change.</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
 <h3 align="middle">Part 3: Transforms</h3>
 
 <img src="./images/robot.png" width="400px" align="middle"/>
