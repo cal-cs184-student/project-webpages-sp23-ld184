@@ -1,7 +1,279 @@
-<html>
-	<head>
-	</head>
-	<body>
-		Project 2 here
-	</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>
+  body {
+    padding: 100px;
+    width: 1000px;
+    margin: auto;
+    text-align: left;
+    font-weight: 300;
+    font-family: 'Open Sans', sans-serif;
+    color: #121212;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+</style>
+<title>CS 184 Mesh Edit</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+
+<body>
+
+<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2023</h1>
+<h1 align="middle">Project 2: Mesh Edit</h1>
+<h2 align="middle">Chun Deng, Timothy Tu</h2>
+
+<br><br>
+
+<div>
+
+<h2 align="middle">Overview</h2>
+<p>We implemented belzier curves, surfaces, and implemented mesh operations like flip, split, and subdivide</p>
+
+<h2 align="middle">Section I: Belzier Curves and Surfaces</h2>
+
+<h3 align="middle">Part 1: Bezier Curves with 1D de Casteljau Subdivision</h3>
+
+<!-- <p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
+
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>
+        <img src="images/image1.png" align="middle" width="400px"/>
+        <figcaption align="middle">Caption goes here.</figcaption>
+      </td>
+      <td>
+        <img src="images/image2.png" align="middle" width="400px"/>
+        <figcaption align="middle">Caption goes here.</figcaption>
+      </td>
+    </tr>
+    <br>
+    <tr>
+      <td>
+        <img src="images/image3.png" align="middle" width="400px"/>
+        <figcaption align="middle">Caption goes here.</figcaption>
+      </td>
+      <td>
+        <img src="images/image4.png" align="middle" width="400px"/>
+        <figcaption align="middle">Caption goes here.</figcaption>
+      </td>
+    </tr>
+  </table>
+</div> -->
+
+Briefly explain de Casteljau's algorithm and how you implemented it in order to evaluate Bezier curves.
+Take a look at the provided .bzc files and create your own Bezier curve with 6 control points of your choosing. Use this Bezier curve for your screenshots below.
+Show screenshots of each step / level of the evaluation from the original control points down to the final evaluated point. Press E to step through. Toggle C to show the completed Bezier curve as well.
+Show a screenshot of a slightly different Bezier curve by moving the original control points around and modifying the parameter tt via mouse scrolling.
+<p> de Casteljau's algorithm uses linear interpolation recursively to evaluate belzier curves where the evaluation of the cubic belzier curve at point t is described as recursively linear inpolating all the control points, and at each step use the output from the previous step as control points to linearly interpolate for the next step. This follows the convex hull property, which by recursively subdividing we approximate the actual curve, except that, instead of at the midpoint for subdivision, we define at a particular t which we wish to split the belzier curve. Mathematically, this recursive property works due to the Bernstein form of belzier curves. I implemented this portion according to lecture, where I kept an array of control points, and for each evaluate step do a for loop over the control points, lerping i and i+1 control point to push to another array, and returning that result</p>
+<div align="middle">
+	<table style="width=100%">
+	  <tr>
+		<td>
+		  <img src="./imagesp1/1.png" align="middle" width="400px"/>
+		  <figcaption align="middle">Stepping through</figcaption>
+		</td>
+		<td>
+		  <img src="./imagesp1/2.png" align="middle" width="400px"/>
+		  <figcaption align="middle">Stepping through</figcaption>
+		</td>
+	  </tr>
+	  <br>
+	  <tr>
+		<td>
+		  <img src="./imagesp1/3.png" align="middle" width="400px"/>
+		  <figcaption align="middle">Stepping through</figcaption>
+		</td>
+		<td>
+		  <img src="./imagesp1/4.png" align="middle" width="400px"/>
+		  <figcaption align="middle">Stepping through</figcaption>
+		</td>
+	  </tr>
+	  <br>
+	  <tr>
+		<td>
+		  <img src="./imagesp1/5.png" align="middle" width="400px"/>
+		  <figcaption align="middle">Stepping through</figcaption>
+		</td>
+		<td>
+		  <img src="./imagesp1/6.png" align="middle" width="400px"/>
+		  <figcaption align="middle">Stepping through</figcaption>
+		</td>
+	  </tr>
+	  <br>
+	  <tr>
+		<td>
+		  <img src="./imagesp1/7.png" align="middle" width="400px"/>
+		  <figcaption align="middle">Showing full curve</figcaption>
+		</td>
+		<td>
+		  <img src="./imagesp1/8.png" align="middle" width="400px"/>
+		  <figcaption align="middle">Adjusting the points</figcaption>
+		</td>
+	  </tr>
+	  <br>
+	  <tr>
+		<td>
+		  <img src="./imagesp1/9.png" align="middle" width="400px"/>
+		  <figcaption align="middle">Scrolling through</figcaption>
+		</td>
+		<td>
+		  <img src="./imagesp1/10.png" align="middle" width="400px"/>
+		  <figcaption align="middle">Scrolling through</figcaption>
+		</td>
+	  </tr>
+	</table>
+  </div>
+
+<h3 align="middle">Part 2: Bezier Surfaces with Separable 1D de Casteljau</h3>
+
+<p>Walk through your supersampling algorithm and data structures. Why is supersampling useful? What modifications did you make to the rasterization pipeline in the process? Explain how you used supersampling to antialias your triangles. </p>
+<p>My algorithm for super sampling involves involves going through the sample_buffer, and encoding another matrix in the original x, y grid, then sampling as normal for the color data to be put inside the sample buffer. In the resolve to frame buffer function, I then take the average of the color values of one particular x, y pixel, then render that to the rgb frame buffer. Finally, I changed the fill_pixel function to fill in pixels in a while loop for all the super samples per pixel, so that we fix up the lines. Essentially, I added another 2 for-loops inside the original algorithm from part 1, then changed other functions so that the program would behave properly.</p>
+<p>Show png screenshots of basic/test4.svg with the default viewing parameters and sample rates 1, 4, and 16 to compare them side-by-side. Position the pixel inspector over an area that showcases the effect dramatically; for example, a very skinny triangle corner. Explain why these results are observed.</p>
+
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>
+        <img src="./images/184p2p1.png" align="middle" width="400px"/>
+        <figcaption align="middle">With no super sampling, the aliasing is very apparent, with a distinct island of pixels from the main triangle</figcaption>
+      </td>
+      <td>
+        <img src="./images/184p2p2.png" align="middle" width="400px"/>
+        <figcaption align="middle">With 4 per pixel of super sampling, we see more pixels along the triangle tips since some subpixels are now inside the triangle, but there is still a distinct island of 2 faint pixels separate from the main triangle since all non of the subpixels made it into the triangle from the pixels bridging the two.</figcaption>
+      </td>
+    </tr>
+    <br>
+    <tr>
+      <td>
+        <img src="./images/184p2p3.png" align="middle" width="400px"/>
+        <figcaption align="middle">This is the 9 per pixel super sampling</figcaption>
+      </td>
+      <td>
+        <img src="./images/184p2p4.png" align="middle" width="400px"/>
+        <figcaption align="middle">With 16 per pixel super sampling, we see a dramatic improvement from the original image, with no more distinct island of pixels from the main body. Notice that at the tip the triangle bridges to the island with faint pixels, it means that at those pixel location, althought the original sampling at the center of the pixel is no longer inside the triangle, part of that pixel after subdivision is now inside the boundaries of the triangle.</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<p>EC: With jitter sampling, things get a little messy. instead of a static offset of 0.5, I used a random variable between 0 and 1 as the location to super sample.</p>
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>
+        <img src="./images/scuffed1.png" align="middle" width="400px"/>
+        <figcaption align="middle">this is nearest pixel sampling. As seen here, jitter sampling causes the edges to sometime fall out of the triangle, causing aliases on the edges. In fact, this can be interpreted as adding noise to high frequency data.</figcaption>
+      </td>
+      <td>
+        <img src="./images/scuffed2.png" align="middle" width="400px"/>
+        <figcaption align="middle">This is the 4 pixel super sample, The aliases are disappearing relatively quickly.</figcaption>
+      </td>
+    </tr>
+    <br>
+    <tr>
+      <td>
+        <img src="./images/scuffed3.png" align="middle" width="400px"/>
+        <figcaption align="middle">by 9 super samples, it almost entirely disappears, there are still some pixels left that have lighter shades on the edges due to randomness.</figcaption>
+      </td>
+      <td>
+        <img src="./images/scuffed4.png" align="middle" width="400px"/>
+        <figcaption align="middle">from 4 pixel super sample, this looks better than the default method in terms of reducing aliases. However, due to randomness, each time we re-ender the edges will change.</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+<h3 align="middle">Part 3: Transforms</h3>
+
+<img src="./images/robot.png" width="400px" align="middle"/>
+<figcaption align="middle">I was tring to make the robot wave. I added an extra rotation transform on top of both arm segments (this works since transforms are organized in a tree structure, so the rotation applies to both arm segments), I've also realigned the the arms with the torso by change the translation transform at the top of each arm segment.</figcaption>
+
+<h2 align="middle">Section II: Sampling</h2>
+
+<h3 align="middle">Part 4: Barycentric coordinates</h3>
+<p>Barycentric coordinates are essentially transforming the tradition (x, y) coordinates in euclidian space with basis vectors (1, 0) and (0, 1) to a new coordinate system span by the three points of the triangle. Essentially, you now view the point x, y as a linear combination of the three vertices of the triangle, and the barycentric coordinates are the "weight" given to each vertex of the triangle. The idea is that, if I were to say, also interpret the color of the (x, y) coordinate as the linear combination of the color of the vertices with their corresponding weights, then we get the triangle like like below, with red, green, and blue on the vertices. The color of the pixels in between them is described as a weighted sum of the color at the vertices with their corresponding barycentric coordinates.</p>
+<img src="./images/colortriangle.png" width="400px"/>
+
+<img src="./images/colorwheel.png" width="400px"/>
+
+<h3 align="middle">Part 5: "Pixel sampling" for texture mapping</h3>
+<p>Pixel sampling (texturing) is the idea of sampling the texture for colors at the coordinate determined by the pixel. For an (x, y) inside the triangle, there is a corresponding coordinate (u, v) coordinate for the texture triangle, which we will then sample for color. How I implemented this was first converting the (x,y) coordinate into barycentric coordinatese, then with the barycentric coordinate reproject it down to the u,v coordinates with the u,v coordinate provided as input to the function cooresponding to each point. </p>
+<p>With more detail, on top of the function I created from part 4, I implemented a simple linear transform from the barycentric coordinate system into the u,v coordinates for the texture, and in texture.cpp I sampled the texture at the location u * (width-1) and v * (height - 1) since u and v is of range (0, 1) and the texture is indexed starting from 0. </p>
+<p>In this way, by being able to sample the color value of each pixel of a triangle from a texture, Dividing the image into triangles allows us to accomplish texture mapping, since the texture is now "project" onto all the triangles.</p>
+<p>Nearest pixel sampling refers to getting the color value at the nearest pixel corresponding to the (u, v) cooredinate on the texture. Bilinear sampling describes the idea of taking the u,v coordinate, getting the 4 closest pixel cooresponding to that u, v coordinate, then getting the color by linearly interpolating between the color values at the 4 surrounding points. The idea is we linearly interpolate 2 colors in the x direction, then get the final color by linearly interpolating those two colors by the y direction.</p>
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>
+        <img src="./images/184p5n1.png" align="middle" width="400px"/>
+        <figcaption align="middle">this is nearest pixel sampling with no supersampling</figcaption>
+      </td>
+      <td>
+        <img src="./images/184p5b1.png" align="middle" width="400px"/>
+        <figcaption align="middle">This is the bilinear sampling with no supersampling. the jaggies on the red horizon significantly improves over nearest pixel sampling in the center. In fact, the aliasing improves quite a bit. The edges, however remain rough on both images. In this sense, we have no filtered out high frequency data on whether or not a pixel is part of the triangle. We also still have aliases on the edges of the image, due to the idea that we are sampling at too low of a frequency on the edges of the image due to the shape of what we are projecting the image onto (rectangle image onto a weird rectangular circle)</figcaption>
+      </td>
+    </tr>
+    <br>
+    <tr>
+      <td>
+        <img src="./images/184p5n16.png" align="middle" width="400px"/>
+        <figcaption align="middle">this is the nearest pixel sampling with 16 pixels of super sampling</figcaption>
+      </td>
+      <td>
+        <img src="./images/184p5b16.png" align="middle" width="400px"/>
+        <figcaption align="middle">this is bilinear pixel sampling with 16 pixel of supersampling. NOt much is different here compared to the nearest pixel sampling.</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<p>There is a large difference of the texture quality on the inside of the "triangles" when comparing the bilinear and nearest with no super sampling. The reason is that, bilinear sampling is similar to "doubling" the sampling frequency at the texture level, kind of like 4 pixel super sampling post-projection with linear interpolation based on uv coordinates instead of just averaging. super sampling at 4 level is a good improvement over no supersampling, since it removes a lot of the aliases except for the more extreme circumstances. With 16 pixel of super sampling, there is minimal difference between bilinear and nearest super sampling, since we are already sampling at a higher frequency, so the addition of 4 pixel resampling at each super sample is going to contribute little to removing aliases, if any of them are still left.</p>
+
+<h3 align="middle">Part 6: "Level sampling" with mipmaps for texture mapping</h3>
+
+<p>Level sampling, or allows sampling for the color of the pixel from different "levels" of the texture, so that the source texture to sample from is low resolution when sampling at a low frequency (prevent moire pattern artifacts).</p>
+<p>The way I implemented level sampling is as according to lecture: in addition to part 5, I also compute the uv coordinate of (x+1, y) and (x, y+1), clamping it if it traverses outside of the triangle. I then pass the delta change in the uv coordinates to the cooresponding parameter variable to the texture function, which then calculates the level of the mip map to sample from according to slide 85 of the lecture. The level are clamped from 0 to the maximum level of the mip map - 1 (since it is 0 indexed), and then sample that pixel with the appropriate pixel sampling method with the correct level passed in. This implementation means that different pixel of the image might be sampled from different resolution of the texture, depending on how the texture is projected onto the uv mapping. (screen space to texture space).</p>
+<p>Comparing the three different techniques: super sampling takes a whole lot of memory and a whole lot of compute: we are effectly sampling sampling rate * width * height of the buffer, having to store the entire buffer in memory, then later average it out to render onto the screen. It is also the most powerful, as it effectly counteracts the aliasing effects at a frequency level.</p>
+<p>pixel sampling at nearest does nearly nothing for anti-aliasing, it's like super sampling at level 0 (it is also the cheapest of all texturing methods). Bilinear is akin to super sampling with 4 super sample per pixel, although it does not take any extra memory since we don't need to keep any more buffers in memory than just pixel sampling, it is, however, slower tho since it needs to lerp 3 times with 4 texel reads instead of just 1 texel read. It does, however, counter aliasing to an extent at the texture level. The corners of the triangle are still very much prone to aliasing.</p>
+<p>Mip maps is like balance of the previous 2 methods: it takes some extra memory, but it is also bounded to at most 2 times the original texel buffer. However, it also counteracts moire patterns due to the approach of down-sizing the source texture (removing high frequencies) before we sample. We also use a little more compute than just raw sampling, for instance doing the level calculation (matrix operations) and depending on the method, it might use a couple extra compute (bilinear level sampling uses 2 more lerps).</p>
+
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>
+        <img src="./images/p6p1.png" align="middle" width="400px"/>
+        <figcaption align="middle">level 0 with no nearest pixel sampling</figcaption>
+      </td>
+      <td>
+        <img src="./images/p6p2.png" align="middle" width="400px"/>
+        <figcaption align="middle">level 0 with bilinear pixel sampling. Bilinear pixel sampling on it's own on this texture doesn't really do too much in terms of anti-aliasing the most jarring of aliases from the distortion of the projection.</figcaption>
+      </td>
+    </tr>
+    <br>
+    <tr>
+      <td>
+        <img src="./images/p6p3.png" align="middle" width="400px"/>
+        <figcaption align="middle">nearest level with nearest pixel sampling. There is a massive difference. The edges are now reduced in resolution due from mip mapping (this means I implemented this right). And so the aliases from distortion from the projection are now normalized.</figcaption>
+      </td>
+      <td>
+        <img src="./images/p6p4.png" align="middle" width="400px"/>
+        <figcaption align="middle">nearest level with bilinear pixel sampling. Once the aliasing is normalized from the mip map, bilinear pixel sampling are now making a difference. It also looks better than if I super sampled at 4, due to super sampling not necessarily mapping to the nearest uv coordinates after projection.</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<h2 align="middle">Section III: Art Competition</h2>
+<p>If you are not participating in the optional art competition, don't worry about this section!</p>
+
+<h3 align="middle">Part 7: Draw something interesting!</h3>
+
+<p>The link to the webpage is  <a href="https://cal-cs184-student.github.io/project-webpages-sp23-ld184/proj1/index.html">this</a></p>
+
+</body>
 </html>
